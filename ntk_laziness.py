@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/15oEokl66a-06F9xoP9Rh77EEwh2LToPQ
 """
 
-#!git clone https://@github.com/TaraEsmaeilbeig/PEFT.git
+#!git clone https://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@github.com/TaraEsmaeilbeig/PEFT.git
 #!pip install nbconvert
 #!pip install transformers
 #!pip install datasets
@@ -111,11 +111,14 @@ for name, param in model.named_parameters():
     if 'classifier' in name:
         param.requires_grad = True
 
+
 def Kernal_Whole(tensor):
     # Get the dimensions of the input tensor
     N, M, P, Q = tensor.shape
+    #result_tensor = torch.zeros(N * P, M * Q)
+    result_tensor = tensor.permute(0, 2,1, 3).reshape(N * P, M * Q)
 
-    result_tensor = tensor.permute(0, 2, 1, 3).reshape(N * P, M * Q)
+
 
     return result_tensor
 
@@ -130,9 +133,10 @@ def tokenize_input(texts, tokenizer, max_length=10):
     )
 
 # Example input sets
-texts_set_1 = tokenized_datasets["validation"]['sentence'][0:10]
-texts_set_2 = tokenized_datasets["validation"]['sentence'][10:20]
-
+print(tokenized_datasets)
+texts_set_1 = tokenized_datasets["train"]['sentence'][0:5]
+#texts_set_2 = tokenized_datasets["validation"]['sentence'][3:6]
+texts_set_2 = tokenized_datasets["test"]['sentence'][5:10]
 
 # Tokenize inputs
 input_set_1 = tokenize_input(texts_set_1, tokenizer)
@@ -196,7 +200,7 @@ def fnet_single(params, buffers, x):
     return fnet(params, buffers, x.unsqueeze(0)).squeeze(0)
 
 # NTK Calculation (similar to your original code)
-def empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x1, x2, compute='full'):
+def empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x1, x2, compute='trace'):
     # Compute J(x1)
     jac1 = vmap(jacrev(fnet_single), (None, None, 0))(params, buffers, x1)
     jac1 = [j.flatten(2) for j in jac1]
@@ -250,8 +254,8 @@ plt.show()
 
 num_samples = len(tokenized_datasets["train"])
 steps_per_epoch = num_samples // 32  # Assuming batch size is 32
-max_steps_half_epoch = steps_per_epoch // 2
-max_steps=max_steps_half_epoch
+max_steps_fraction_epoch = steps_per_epoch // 3
+max_steps=max_steps_fraction_epoch
 
 training_args = TrainingArguments(
     output_dir='dir',
@@ -269,7 +273,7 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,
     lr_scheduler_type="cosine",  # You can choose from 'linear', 'cosine', 'cosine_with_restarts', 'polynomial', etc.
     warmup_steps=100,
-    max_steps=max_steps_half_epoch  # Train for half epoch
+    max_steps=max_steps_fraction_epoch)  # Train for half epoch
 
 trainer = Trainer(
     model=model,
@@ -281,39 +285,38 @@ trainer = Trainer(
     compute_metrics=compute_metrics
 )
 
-#train one epoch
-trainer.train()
-#plot heat map
-result_from_ntk_vps = empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x_train, x_test,compute='full')
-ntk_result = Kernal_Whole(result_from_ntk_vps)
+frobenius_norms = []
+for  ntk_step in  range(3):
+   result_from_ntk_vps = empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x_train, x_test,compute='full')
+   ntk_result = Kernal_Whole(result_from_ntk_vps)
+   result_ntk_np = ntk_result.detach().cpu().numpy()  # Convert to CPU and NumPy
+   plt.figure(figsize=(10, 8))  # Set the size of the figure
+   sns.heatmap(result_ntk_np, cmap="viridis")  # You can change the color map to 'coolwarm', 'magma', etc.
+   plt.title("Heatmap of NTK")
+   plt.xlabel("Test Samples")
+   plt.ylabel("Train Samples")
+   plt.title('Epoch 1')
+   plt.savefig(f'NTK_step_{ntk_step}.jpg', format='jpg', dpi=300)
+   print(f"---NTK step {ntk_step} done---------")
 
-result_ntk_np = ntk_result.detach().cpu().numpy()  # Convert to CPU and NumPy
+   if ntk_step == 0:
+        # Preserve the result for the first step
+        result_ntk_0 = result_ntk_np.copy()
+        fro_0=np.linalg.norm(result_ntk_0, 'fro')
 
-# Use seaborn's heatmap function to plot
-plt.figure(figsize=(10, 8))  # Set the size of the figure
-sns.heatmap(result_ntk_np, cmap="viridis")  # You can change the color map to 'coolwarm', 'magma', etc.
-plt.title("Heatmap of NTK")
-plt.xlabel("Test Samples")
-plt.ylabel("Train Samples")
-plt.title('Epoch 1')
-plt.savefig('NTK_half_epoch.jpg', format='jpg', dpi=300)
-print("----half epoch NTK done---------")
-plt.show()
+   if ntk_step > 0:
+        frobenius_norm = np.linalg.norm(result_ntk_np - result_ntk_0, 'fro')/fro_0
+        frobenius_norms.append(frobenius_norm)
+        print('current frob norm',frobenius_norm)
 
-trainer.train()
-#plot heat map
-result_from_ntk_vps = empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x_train, x_test,compute='full')
-ntk_result = Kernal_Whole(result_from_ntk_vps)
+   trainer.train()
 
-result_ntk_np = ntk_result.detach().cpu().numpy()  # Convert to CPU and NumPy
-
-# Use seaborn's heatmap function to plot
-plt.figure(figsize=(10, 8))  # Set the size of the figure
-sns.heatmap(result_ntk_np, cmap="viridis")  # You can change the color map to 'coolwarm', 'magma', etc.
-plt.title("Heatmap of NTK")
-plt.xlabel("Test Samples")
-plt.ylabel("Train Samples")
-plt.title('Epoch 1')
-plt.savefig('NTK_one_epoch.jpg', format='jpg', dpi=300)
-print("----one epoch NTK done---------")
+# Plot Frobenius norms
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(frobenius_norms) + 1), frobenius_norms, marker='o', linestyle='-', color='b')
+plt.title("Frobenius Norm of NTK Difference")
+plt.xlabel("Iteration Number")
+plt.ylabel("Frobenius Norm")
+plt.grid(True)
+plt.savefig('Frobenius_norm_plot.jpg', format='jpg', dpi=300)
 plt.show()
