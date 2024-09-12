@@ -134,9 +134,9 @@ def tokenize_input(texts, tokenizer, max_length=10):
 
 # Example input sets
 print(tokenized_datasets)
-texts_set_1 = tokenized_datasets["train"]['sentence'][0:5]
+texts_set_1 = tokenized_datasets["train"]['sentence'][0:50]
 #texts_set_2 = tokenized_datasets["validation"]['sentence'][3:6]
-texts_set_2 = tokenized_datasets["test"]['sentence'][5:10]
+texts_set_2 = tokenized_datasets["test"]['sentence'][50:100]
 
 # Tokenize inputs
 input_set_1 = tokenize_input(texts_set_1, tokenizer)
@@ -200,7 +200,7 @@ def fnet_single(params, buffers, x):
     return fnet(params, buffers, x.unsqueeze(0)).squeeze(0)
 
 # NTK Calculation (similar to your original code)
-def empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x1, x2, compute='trace'):
+def empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x1, x2, compute='full'):
     # Compute J(x1)
     jac1 = vmap(jacrev(fnet_single), (None, None, 0))(params, buffers, x1)
     jac1 = [j.flatten(2) for j in jac1]
@@ -286,7 +286,7 @@ trainer = Trainer(
 )
 
 frobenius_norms = []
-for  ntk_step in  range(3):
+for  ntk_step in  range(10):
    result_from_ntk_vps = empirical_ntk_jacobian_contraction(fnet_single, params, buffers, x_train, x_test,compute='full')
    ntk_result = Kernal_Whole(result_from_ntk_vps)
    result_ntk_np = ntk_result.detach().cpu().numpy()  # Convert to CPU and NumPy
