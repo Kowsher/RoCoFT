@@ -142,7 +142,7 @@ def tokenize_input(texts, tokenizer, max_length=10):
     )
 
 # Example input sets
-ntk_sample_size=40
+#ntk_sample_size=40
 texts_set_1 = tokenized_datasets["validation"]['sentence'][0:ntk_sample_size]
 texts_set_2 = tokenized_datasets["validation"]['sentence'][ntk_sample_size:2*ntk_sample_size]
 print(f' NTK sampe size is {ntk_sample_size}')
