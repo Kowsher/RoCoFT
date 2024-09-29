@@ -1,4 +1,4 @@
-# RoCoFt
+# RoCoFT
 
 This is the implementation for the paper RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates
 We explore a set of novel PEFT methods where the fine-tuning is applied on RoWs and columns of weights of the model.
