@@ -37,7 +37,7 @@ You can access the datasets from hugginface
 
 ## Quick Demos
 
-To get started with `propulsion`, follow these simple steps:
+To get started with `RoCoFT`, follow these simple steps:
 
 1. **Import the necessary modules:**
 
@@ -80,4 +80,4 @@ To get started with `propulsion`, follow these simple steps:
 
     leader.PEFT_prunig(model, method='column', rank=3, input_data=embeddings, descending=False)
     ```
-If descending is true, pruning method return the least weights. 
+If `descending=True`, pruning method return the least weights. 
