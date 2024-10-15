@@ -2,11 +2,53 @@
 
 This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates".
 
-We explore a set of novel PEFT methods where the fine-tuning is applied on rows and columns of weights of the model.
-In RoCoFT-row we finetune the selected weight $\mathbf{W}$ as $\mathbf{W}=\mathbf{W}+\mathbf{R}$  and in RoCoFT-col we finetune the selected weight $\mathbf{W}$ as $\mathbf{W}=\mathbf{W}+\mathbf{C}$. 
-We  demonstrate  the higher  memroy and time efficiency of our method  in comparison with other PEFT methods.
-This performance is governed by the less number of parameters selected for fine-tuning and also similarity of the  spectrum of the kernels induced  by $\mathbf{R}$ and $\mathbf{C}$.
-Through numerical experiments, we demonstrate that the accuracy of  our method is comparable to other PEFT methods.
+
+<div align="center">
+
+![](https://img.shields.io/github/last-commit/Kowsher/RoCoFT?color=green)
+![](https://img.shields.io/github/stars/Kowsher/RoCoFT?color=yellow)
+![](https://img.shields.io/github/forks/Kowsher/RoCoFT?color=lightblue)
+![](https://img.shields.io/badge/PRs-Welcome-green)
+
+</div>
+
+<div align="center">
+
+**[<a href="https://arxiv.org/abs/2409.10927">Paper</a>]**
+**[<a href="https://github.com/Kowsher/Propulsion">Code</a>]**
+
+
+</div>
+
+
+<p align="center">
+
+<img src="./figures/propulsion_compare.png" width="770">
+
+</p>
+
+---
+>
+> 🙋 Please let us know if you find out a mistake or have any suggestions!
+> 
+> 🌟 If you find this resource helpful, please consider to star this repository and cite our research:
+
+```
+@inproceedings{kowsher2024rocoft,
+  title={RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates},
+  author={Kowsher, Md and Esmaeilbeig, Tara and Yu, Chun-Nam and Soltanalian, Mojtaba and Yousefi, Niloofar},
+  
+}
+```
+
+## Introduction
+ RoCoFT is a  parameter-efficient fine-tuning (PEFT) method designed to optimize task-specific performance while drastically reducing computational overhead by training selective rows and columns from pre-trained weight matrix
+
+<p align="center">
+
+<img src="./figures/rocoft.png" width="570">
+
+</p>
 
 
 ## Requirements
@@ -42,7 +84,7 @@ To get started with `RoCoFT`, follow these simple steps:
 1. **Import the necessary modules:**
 
     ```python
-    import leader
+    import RoCoFT
     from transformers import RobertaForSequenceClassification
     ```
 
@@ -50,7 +92,7 @@ To get started with `RoCoFT`, follow these simple steps:
 
     ```python
     model = RobertaForSequenceClassification.from_pretrained('model_name')
-    leader.PEFT(model, method='row', rank=1) 
+    RoCoFT.PEFT(model, method='row', rank=1) 
     ```
 
 3. **For column**
@@ -61,7 +103,7 @@ To get started with `RoCoFT`, follow these simple steps:
 4. **In order to choose row or column using pruning technique**
 
     ```python
-    import leader
+    import RoCoFT
     
     # Example text input
     input_text = tokenized_datasets['train']['sentence'][0:200]
@@ -78,6 +120,10 @@ To get started with `RoCoFT`, follow these simple steps:
     with torch.no_grad():
         embeddings = model.roberta.embeddings(input_ids)
 
-    leader.PEFT_prunig(model, method='column', rank=3, input_data=embeddings, descending=False)
+    RoCoFT.PEFT_prunig(model, method='column', rank=3, input_data=embeddings, descending=False)
     ```
+
+    
 If `descending=True`, pruning method return the least weights. 
+
+🚩 **Note:** In the examples or notebook, we have used `leader` ,  feel free to replace it with  `RoCoFT`
