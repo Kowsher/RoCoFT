@@ -94,7 +94,7 @@ To get started with `RoCoFT`, follow these simple steps:
 3. **For column**
 
     ```python
-    leader.PEFT(model, method='column', rank=1) 
+    RoCoFT.PEFT(model, method='column', rank=1) 
     ```
 4. **In order to choose row or column using pruning technique**
 
