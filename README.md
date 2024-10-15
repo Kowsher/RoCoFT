@@ -44,11 +44,7 @@ This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large 
 ## Introduction
  RoCoFT is a  parameter-efficient fine-tuning (PEFT) method designed to optimize task-specific performance while drastically reducing computational overhead by training selective rows and columns from pre-trained weight matrix
 
-<p align="center">
 
-<img src="./figures/rocoft.png" width="570">
-
-</p>
 
 
 ## Requirements
