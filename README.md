@@ -6,8 +6,8 @@ This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large 
 <div align="center">
 
 ![](https://img.shields.io/github/last-commit/Kowsher/RoCoFT?color=green)
-![](https://img.shields.io/github/stars/Kowsher/RoCoFT/?color=yellow)
-![](https://img.shields.io/github/forks/Kowsher/RoCoFT/?color=lightblue)
+![](https://img.shields.io/github/stars/Kowsher/RoCoFT?color=yellow)
+![](https://img.shields.io/github/forks/Kowsher/RoCoFT?color=lightblue)
 ![](https://img.shields.io/badge/PRs-Welcome-green)
 
 </div>
