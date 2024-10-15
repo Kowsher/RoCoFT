@@ -1,6 +1,6 @@
 # RoCoFT
 
-This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates".
+This is the implementation for the paper "`RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates`".
 
 
 
