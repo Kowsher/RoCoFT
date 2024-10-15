@@ -14,8 +14,8 @@ This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large 
 
 <div align="center">
 
-**[<a href="https://arxiv.org/abs/2409.10927">Paper</a>]**
-**[<a href="https://github.com/Kowsher/Propulsion">Code</a>]**
+**[<a href="https://arxiv.org/">Paper</a>]**
+**[<a href="https://github.com/Kowsher/RoCoFT">Code</a>]**
 
 
 </div>
@@ -23,7 +23,7 @@ This is the implementation for the paper "RoCoFT: Efficient Finetuning of Large 
 
 <p align="center">
 
-<img src="./figures/propulsion_compare.png" width="770">
+<img src="./figures/rocoft.png" width="570">
 
 </p>
 
