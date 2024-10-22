@@ -35,10 +35,11 @@ This is the implementation for the paper "`RoCoFT: Efficient Finetuning of Large
 > 🌟 If you find this resource helpful, please consider to star this repository and cite our research:
 
 ```
-@inproceedings{kowsher2024rocoft,
+@article{kowsher2024rocoft,
   title={RoCoFT: Efficient Finetuning of Large Language Models with Row-Column Updates},
   author={Kowsher, Md and Esmaeilbeig, Tara and Yu, Chun-Nam and Soltanalian, Mojtaba and Yousefi, Niloofar},
-  
+  journal={arXiv preprint arXiv:2410.10075},
+  year={2024}
 }
 ```
 
